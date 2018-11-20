@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  styleguidist:
+    build:
+      context: .
+    ports:
+      - target: 6060
+        published: 6060
+    volumes:
+      - type: bind
+        source: ./src
+        target: /code/src
+        read_only: true
+    restart: always
