@@ -1,0 +1,38 @@
+{
+  "name": "@publishmonkey/style-guide",
+  "version": "0.1.0",
+  "description": "A base style guide for Publishmonkey.",
+  "main": "index.js",
+  "author": "Spencer Rinehart <anubis@overthemonkey.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src -d dist && cp LICENSE package.json README.md dist",
+    "lint": "eslint --ext .jsx,.js src",
+    "start": "styleguidist server"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "prop-types": "^15.6.2",
+    "styled-components": "^4.1.1"
+  },
+  "peerDependencies": {
+    "react": ">= 16.3.0",
+    "react-dom": ">= 16.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.4",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-styleguidist": "^8.0.5",
+    "webpack": "^4.26.0"
+  }
+}

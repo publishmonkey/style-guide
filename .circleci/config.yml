@@ -1,0 +1,142 @@
+version: 2.1
+executors:
+  node:
+    docker:
+      - image: circleci/node:11.1
+    working_directory: ~/project
+commands:
+  load_workspace:
+    description: "Checks out the code and attaches the workspace from previous build steps"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+jobs:
+  checkout:
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package.json" }}
+      - run:
+          name: Install NPM dependencies
+          command: npm install
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - node_modules
+  lint:
+    executor: node
+    steps:
+      - load_workspace
+      - run:
+          name: Check coding style
+          command: npm run lint
+  build_package:
+    executor: node
+    steps:
+      - load_workspace
+      - run:
+          name: Compile distributables
+          command: npm run build
+      - run:
+          name: Create package
+          command: |
+            set -ex
+            npm pack ./dist
+            PACKAGE_VERSION="$(jq --raw-output .version package.json)"
+            PACK_FILE="publishmonkey-style-guide-${PACKAGE_VERSION}.tgz"
+            mv "${PACK_FILE}" package.tgz
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - package.tgz
+      - store_artifacts:
+          path: ~/project/package.tgz
+  build_styleguide:
+    executor: node
+    steps:
+      - load_workspace
+      - run:
+          name: Build styleguide
+          command: npx styleguidist build
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - styleguide
+      - store_artifacts:
+          path: ~/project/styleguide
+  build_docker:
+    executor: node
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build docker image
+          command: docker build .
+  publish_package:
+    executor: node
+    steps:
+      - load_workspace
+      - run:
+          name: Verify package version matches tag
+          command: test "v$(jq --raw-output .version package.json)" = "${CIRCLE_TAG}"
+      - run:
+          name: Publish package to NPM
+          command: npm publish package.tgz
+workflows:
+  pipeline:
+    jobs:
+      - checkout:
+          filters:
+            tags:
+              only: /.*/
+      - lint:
+          requires:
+            - checkout
+          filters:
+            tags:
+              only: /.*/
+      - build_package:
+          requires:
+            - checkout
+          filters:
+            tags:
+              only: /.*/
+      - build_styleguide:
+          requires:
+            - checkout
+          filters:
+            tags:
+              only: /.*/
+      - build_docker:
+          requires:
+            - checkout
+          filters:
+            tags:
+              only: /.*/
+      - hold:
+          type: approval
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - lint
+            - build_package
+            - build_styleguide
+            - build_docker
+      - publish_package:
+          context: org-global
+          requires:
+            - hold
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
