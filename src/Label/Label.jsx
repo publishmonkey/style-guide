@@ -2,12 +2,12 @@ import get from 'lodash/get';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-export const Label = styled.div.attrs({
-  backgroundColor: ({ backgroundColor, theme }) => (
-    get(theme.colors, backgroundColor, backgroundColor)
-  ),
-  title: ({ children }) => children,
-})`
+export const Label = styled.div.attrs(
+  ({ backgroundColor, children, theme }) => ({
+    backgroundColor: get(theme.colors, backgroundColor, backgroundColor),
+    title: children,
+  }),
+)`
   display: inline-block;
   padding: 4px 6px;
   border-radius: 5px;
