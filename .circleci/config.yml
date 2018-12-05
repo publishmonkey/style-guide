@@ -47,9 +47,7 @@ jobs:
           name: Create package
           command: |
             set -ex
-            npm pack ./dist
-            PACKAGE_VERSION="$(jq --raw-output .version package.json)"
-            PACK_FILE="publishmonkey-style-guide-${PACKAGE_VERSION}.tgz"
+            PACK_FILE="$(npm pack ./dist)"
             mv "${PACK_FILE}" package.tgz
       - persist_to_workspace:
           root: ~/project
