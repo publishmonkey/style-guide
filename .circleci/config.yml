@@ -95,6 +95,9 @@ jobs:
           name: Verify package version matches tag
           command: test "v$(jq --raw-output .version package.json)" = "${CIRCLE_TAG}"
       - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >.npmrc
+      - run:
           name: Publish package to NPM
           command: npm publish package.tgz
 workflows:
