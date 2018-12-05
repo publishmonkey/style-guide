@@ -55,6 +55,7 @@ jobs:
             - package.tgz
       - store_artifacts:
           path: ~/project/package.tgz
+          destination: package.tgz
   build_styleguide:
     executor: node
     steps:
@@ -68,6 +69,7 @@ jobs:
             - styleguide
       - store_artifacts:
           path: ~/project/styleguide
+          destination: styleguide
   build_docker:
     executor: node
     steps:
