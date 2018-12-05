@@ -35,7 +35,16 @@ jobs:
       - load_workspace
       - run:
           name: Check coding style
+          command: npm run lint -- --format junit --output-file reports/junit/eslint-results.xml
+      - run:
+          name: Check coding style (human readable)
           command: npm run lint
+          when: on_fail
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit/eslint-results.xml
+          destination: eslint-junit.xml
   build_package:
     executor: node
     steps:
