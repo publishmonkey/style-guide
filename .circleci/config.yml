@@ -6,7 +6,7 @@ executors:
     working_directory: ~/project
 commands:
   load_workspace:
-    description: "Checks out the code and attaches the workspace from previous build steps"
+    description: Checks out the code and attaches the workspace from previous build steps
     steps:
       - checkout
       - attach_workspace:
