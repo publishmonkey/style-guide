@@ -3,7 +3,7 @@ FROM node:11.2-alpine as builder
 RUN mkdir /code
 WORKDIR /code
 
-COPY package.json .
+COPY package.json .npmrc ./
 RUN npm install
 
 FROM node:11.2-alpine
